@@ -57,9 +57,9 @@ namespace Colson_s_Inventory_Tracker
             {
                 
                 
-                getData submitdata = new();
+                getData submitdata = new getData();
 
-                XMLProcessing process = new();
+                XMLProcessing process = new XMLProcessing();
 
                 if(submitdata.submitOrder(process.ExportXML(filePath)))
                 {
@@ -86,7 +86,7 @@ namespace Colson_s_Inventory_Tracker
         private void button1_Click(object sender, EventArgs e)
         {
             this.Hide();
-            ReceiveShipment rs = new();
+            ReceiveShipment rs = new ReceiveShipment();
             rs.prevForm = this;
             rs.Show();
         }

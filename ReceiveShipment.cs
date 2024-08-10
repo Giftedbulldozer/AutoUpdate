@@ -12,7 +12,7 @@ namespace Colson_s_Inventory_Tracker
     public partial class ReceiveShipment : Form
     {
         public Form prevForm;
-        private List<inventoryEntry> inv = new();
+        private List<inventoryEntry> inv = new List<inventoryEntry>();
         public ReceiveShipment()
         {
             InitializeComponent();
@@ -23,7 +23,7 @@ namespace Colson_s_Inventory_Tracker
             string filePath = Environment.CurrentDirectory + "\\orders.xml";
             if (!File.Exists(filePath) && inv.Count > 0)
             {
-                XmlDocument doc = new();
+                XmlDocument doc = new XmlDocument();
 
                 //Create orders root structure Element
                 XmlNode newNode = doc.CreateElement("orders");                
@@ -77,7 +77,7 @@ namespace Colson_s_Inventory_Tracker
             }
             else if (inv.Count > 0)
             {
-                XmlDocument doc = new();
+                XmlDocument doc = new XmlDocument();
                 doc.Load(filePath);
 
                 //Create orders root structure Element
@@ -148,7 +148,7 @@ namespace Colson_s_Inventory_Tracker
             txtBarCode.Text.Trim();
             if (txtBarCode.Text.Length == 12)
             {
-                getData sql = new();
+                getData sql = new getData();
                var tbl = sql.request("select invID, name, rtrim(upc) From tblInventory Where upc = " + "'" + txtBarCode.Text + "' OR name = '" + txtDescription.Text + "'");
 
                 if (tbl.Rows.Count > 0)
@@ -285,7 +285,7 @@ namespace Colson_s_Inventory_Tracker
                 txtPoNumber.Focus();
                 return;
             }
-            inventoryEntry newlist = new();
+            inventoryEntry newlist = new inventoryEntry();
 
             newlist.upc = txtBarCode.Text;
             newlist.Description = txtDescription.Text;
@@ -403,7 +403,7 @@ namespace Colson_s_Inventory_Tracker
 
         private void btncompleteOrder_Click(object sender, EventArgs e)
         {
-            getData sql = new();
+            getData sql = new getData();
 
             if (inv.Count > 0)
             {
@@ -426,7 +426,7 @@ namespace Colson_s_Inventory_Tracker
 
         private void btnPriceBreakdown_Click(object sender, EventArgs e)
         {
-            PriceBreakdown pb = new();
+            PriceBreakdown pb = new PriceBreakdown();
             pb.Show();
             //if( pb.ShowDialog() == DialogResult.OK)
             //{
@@ -436,7 +436,7 @@ namespace Colson_s_Inventory_Tracker
 
         private void generateBarcodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            getData gd = new();
+            getData gd = new getData();
             txtBarCode.Text = gd.generateUPC();
         }
     }
