@@ -170,7 +170,7 @@ namespace Colson_s_Inventory_Tracker
                                 {
                                     if (C.GetType() == typeof(System.Windows.Forms.Label))
                                     {
-                                        if (C.Name.Split("lbl")[1] == D.Name.Split("txt")[1])
+                                        if (C.Name.Replace("lbl"," ") == D.Name.Replace("txt", " "))
                                         {
                                             C.Text += "*";
                                             C.ForeColor = Color.FromArgb(255, 0, 0);
@@ -188,7 +188,7 @@ namespace Colson_s_Inventory_Tracker
                                 {
                                     if (C.GetType() == typeof(System.Windows.Forms.Label))
                                     {
-                                        if (C.Name.Split("lbl")[1] == D.Name.Split("txt")[1])
+                                        if (C.Name.Replace("lbl", " ") == D.Name.Replace("txt", " "))
                                         {
                                             C.Text = C.Text.Split('*')[0];
                                             C.ForeColor = Color.FromArgb(0, 0, 0);
@@ -317,7 +317,7 @@ namespace Colson_s_Inventory_Tracker
                 {
                     if (C.Text != "")
                     {
-                        if(C.Text.Contains('*'))
+                        if(C.Text.Contains("*"))
                         {
                             string text = C.Text.Remove(C.Text.Length - 1);
                             C.Text = text;
