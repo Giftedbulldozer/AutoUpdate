@@ -75,9 +75,7 @@ namespace Colson_s_Inventory_Tracker
 
         private void button4_Click(object sender, EventArgs e)
         {
-            
-
-            string srv = StringCipher.DecryptString(Properties.Resources.Server, Properties.Resources.Key);
+           
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
