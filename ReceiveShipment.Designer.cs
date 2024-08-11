@@ -172,6 +172,7 @@ namespace Colson_s_Inventory_Tracker
             this.button2.TabIndex = 11;
             this.button2.Text = "Discard Entries";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // dtgridReceived
             // 

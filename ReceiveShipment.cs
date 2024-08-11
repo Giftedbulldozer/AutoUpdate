@@ -208,7 +208,7 @@ namespace Colson_s_Inventory_Tracker
                 {
                     foreach (Control C in this.Controls)
                     {
-                        if(C.GetType() == typeof(System.Windows.Forms.Label))
+                        if(C.GetType() == typeof(System.Windows.Forms.Label) && !C.Name.Contains("*"))
                         {
                             C.Text += "*";
                             C.ForeColor = Color.FromArgb(255, 0, 0);
@@ -438,6 +438,11 @@ namespace Colson_s_Inventory_Tracker
         {
             getData gd = new getData();
             txtBarCode.Text = gd.generateUPC();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            dtgridReceived.Rows.Clear();
         }
     }
 }

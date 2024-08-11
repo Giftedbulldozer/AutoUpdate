@@ -8,6 +8,8 @@ using System.Data.SqlClient;
 using System.Windows.Forms;
 using System.Xml;
 using System.Diagnostics;
+using System.Security.Cryptography;
+using System.IO;
 
 namespace Colson_s_Inventory_Tracker
 {
@@ -23,18 +25,19 @@ namespace Colson_s_Inventory_Tracker
     }
     class getData
     {
-        string sqlConnection = ;
+        
         public DataTable request(string sqlQuery)
         {
+            string connstring = "Server = " + StringCipher.DecryptString(Properties.Resources.Server, Properties.Resources.Key) + ",1433; Database = " + StringCipher.DecryptString(Properties.Resources.Database, Properties.Resources.Key) + "; User ID = " + StringCipher.DecryptString(Properties.Resources.UID, Properties.Resources.Key) + "; Password = " + StringCipher.DecryptString(Properties.Resources.pass, Properties.Resources.Key) + "; Trusted_Connection = False; Encrypt = True;";
             
             DataTable dt = new DataTable();
             //use connection pooling to make the connection system use less resources
-            using(SqlConnection conn = new SqlConnection(sqlConnection))
+            using (SqlConnection conn = new SqlConnection(connstring))
             {
                 try
                 {
                     //Open the connection to the server
-                    
+
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = conn;
                     cmd.CommandType = CommandType.Text;
@@ -52,14 +55,15 @@ namespace Colson_s_Inventory_Tracker
                     conn.Close();
                     return null;
                 }
-                
+
             }
             
         }
 
         public string generateUPC()
         {
-            using (SqlConnection conn = new SqlConnection(sqlConnection))
+            string connstring = "Server = " + StringCipher.DecryptString(Properties.Resources.Server, Properties.Resources.Key) + ",1433; Database = " + StringCipher.DecryptString(Properties.Resources.Database, Properties.Resources.Key) + "; User ID = " + StringCipher.DecryptString(Properties.Resources.UID, Properties.Resources.Key) + "; Password = " + StringCipher.DecryptString(Properties.Resources.pass, Properties.Resources.Key) + "; Trusted_Connection = False; Encrypt = True;";
+            using (SqlConnection conn = new SqlConnection(connstring))
             {
 
                 //Open the connection to the server
@@ -78,7 +82,8 @@ namespace Colson_s_Inventory_Tracker
 
         public bool sendXML(string xml)
         {
-            using (SqlConnection conn = new SqlConnection(sqlConnection))
+            string connstring = "Server = " + StringCipher.DecryptString(Properties.Resources.Server, Properties.Resources.Key) + ",1433; Database = " + StringCipher.DecryptString(Properties.Resources.Database, Properties.Resources.Key) + "; User ID = " + StringCipher.DecryptString(Properties.Resources.UID, Properties.Resources.Key) + "; Password = " + StringCipher.DecryptString(Properties.Resources.pass, Properties.Resources.Key) + "; Trusted_Connection = False; Encrypt = True;";
+            using (SqlConnection conn = new SqlConnection(connstring))
             {                
                 try
                 {
@@ -105,7 +110,8 @@ namespace Colson_s_Inventory_Tracker
 
         public string sendData(string sqlQuery)
         {
-            using (SqlConnection conn = new SqlConnection(sqlConnection))
+            string connstring = "Server = " + StringCipher.DecryptString(Properties.Resources.Server, Properties.Resources.Key) + ",1433; Database = " + StringCipher.DecryptString(Properties.Resources.Database, Properties.Resources.Key) + "; User ID = " + StringCipher.DecryptString(Properties.Resources.UID, Properties.Resources.Key) + "; Password = " + StringCipher.DecryptString(Properties.Resources.pass, Properties.Resources.Key) + "; Trusted_Connection = False; Encrypt = True;";
+            using (SqlConnection conn = new SqlConnection(connstring))
             {
                 try
                 {
@@ -135,7 +141,8 @@ namespace Colson_s_Inventory_Tracker
 
         public  bool submitOrder(List<inventoryEntry> inv)
         {
-            using (SqlConnection conn = new SqlConnection(sqlConnection))
+            string connstring = "Server = " + StringCipher.DecryptString(Properties.Resources.Server, Properties.Resources.Key) + ",1433; Database = " + StringCipher.DecryptString(Properties.Resources.Database, Properties.Resources.Key) + "; User ID = " + StringCipher.DecryptString(Properties.Resources.UID, Properties.Resources.Key) + "; Password = " + StringCipher.DecryptString(Properties.Resources.pass, Properties.Resources.Key) + "; Trusted_Connection = False; Encrypt = True;";
+            using (SqlConnection conn = new SqlConnection(connstring))
             {
                // return false;
                 try
@@ -237,72 +244,53 @@ namespace Colson_s_Inventory_Tracker
         // This constant determines the number of iterations for the password bytes generation function.
         private const int DerivationIterations = 1000;
 
-        public static string Encrypt(string plainText, string passPhrase)
+        public static string EncryptString( string plainText, string key)
         {
-            // Salt and IV is randomly generated each time, but is preprended to encrypted cipher text
-            // so that the same Salt and IV values can be used when decrypting.  
-            var saltStringBytes = Generate256BitsOfRandomEntropy();
-            var ivStringBytes = Generate256BitsOfRandomEntropy();
-            var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
-            using (var password = new Rfc2898DeriveBytes(passPhrase, saltStringBytes, DerivationIterations))
+            byte[] iv = new byte[16];
+            byte[] array;
+
+            using (Aes aes = Aes.Create())
             {
-                var keyBytes = password.GetBytes(Keysize / 8);
-                using (var symmetricKey = new RijndaelManaged())
+                aes.Key = Encoding.UTF8.GetBytes(key);
+                aes.IV = iv;
+
+                ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+
+                using (MemoryStream memoryStream = new MemoryStream())
                 {
-                    symmetricKey.BlockSize = 256;
-                    symmetricKey.Mode = CipherMode.CBC;
-                    symmetricKey.Padding = PaddingMode.PKCS7;
-                    using (var encryptor = symmetricKey.CreateEncryptor(keyBytes, ivStringBytes))
+                    using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, encryptor, CryptoStreamMode.Write))
                     {
-                        using (var memoryStream = new MemoryStream())
+                        using (StreamWriter streamWriter = new StreamWriter((Stream)cryptoStream))
                         {
-                            using (var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
-                            {
-                                cryptoStream.Write(plainTextBytes, 0, plainTextBytes.Length);
-                                cryptoStream.FlushFinalBlock();
-                                // Create the final bytes as a concatenation of the random salt bytes, the random iv bytes and the cipher bytes.
-                                var cipherTextBytes = saltStringBytes;
-                                cipherTextBytes = cipherTextBytes.Concat(ivStringBytes).ToArray();
-                                cipherTextBytes = cipherTextBytes.Concat(memoryStream.ToArray()).ToArray();
-                                memoryStream.Close();
-                                cryptoStream.Close();
-                                return Convert.ToBase64String(cipherTextBytes);
-                            }
+                            streamWriter.Write(plainText);
                         }
+
+                        array = memoryStream.ToArray();
                     }
                 }
             }
+
+            return Convert.ToBase64String(array);
         }
 
-        public static string Decrypt(string cipherText, string passPhrase)
+        public static string DecryptString( string cipherText, string key)
         {
-            // Get the complete stream of bytes that represent:
-            // [32 bytes of Salt] + [32 bytes of IV] + [n bytes of CipherText]
-            var cipherTextBytesWithSaltAndIv = Convert.FromBase64String(cipherText);
-            // Get the saltbytes by extracting the first 32 bytes from the supplied cipherText bytes.
-            var saltStringBytes = cipherTextBytesWithSaltAndIv.Take(Keysize / 8).ToArray();
-            // Get the IV bytes by extracting the next 32 bytes from the supplied cipherText bytes.
-            var ivStringBytes = cipherTextBytesWithSaltAndIv.Skip(Keysize / 8).Take(Keysize / 8).ToArray();
-            // Get the actual cipher text bytes by removing the first 64 bytes from the cipherText string.
-            var cipherTextBytes = cipherTextBytesWithSaltAndIv.Skip((Keysize / 8) * 2).Take(cipherTextBytesWithSaltAndIv.Length - ((Keysize / 8) * 2)).ToArray();
+            byte[] iv = new byte[16];
+            byte[] buffer = Convert.FromBase64String(cipherText);
 
-            using (var password = new Rfc2898DeriveBytes(passPhrase, saltStringBytes, DerivationIterations))
+            using (Aes aes = Aes.Create())
             {
-                var keyBytes = password.GetBytes(Keysize / 8);
-                using (var symmetricKey = new RijndaelManaged())
+                aes.Key = Encoding.UTF8.GetBytes(key);
+                aes.IV = iv;
+                ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+
+                using (MemoryStream memoryStream = new MemoryStream(buffer))
                 {
-                    symmetricKey.BlockSize = 256;
-                    symmetricKey.Mode = CipherMode.CBC;
-                    symmetricKey.Padding = PaddingMode.PKCS7;
-                    using (var decryptor = symmetricKey.CreateDecryptor(keyBytes, ivStringBytes))
+                    using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, decryptor, CryptoStreamMode.Read))
                     {
-                        using (var memoryStream = new MemoryStream(cipherTextBytes))
+                        using (StreamReader streamReader = new StreamReader((Stream)cryptoStream))
                         {
-                            using (var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read))
-                            using (var streamReader = new StreamReader(cryptoStream, Encoding.UTF8))
-                            {
-                                return streamReader.ReadToEnd();
-                            }
+                            return streamReader.ReadToEnd();
                         }
                     }
                 }

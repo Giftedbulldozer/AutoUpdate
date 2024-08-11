@@ -59,5 +59,50 @@ namespace Colson_s_Inventory_Tracker.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to QUlqQ8IUV2Xgm3MO0yM28w==.
+        /// </summary>
+        internal static string Database {
+            get {
+                return ResourceManager.GetString("Database", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to xv#.+;,DVkpJ_cr9.
+        /// </summary>
+        internal static string Key {
+            get {
+                return ResourceManager.GetString("Key", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MuHpEHpPr0Vf5clpEQREjA==.
+        /// </summary>
+        internal static string pass {
+            get {
+                return ResourceManager.GetString("pass", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to uBDmQ1iiFvKeaM7V/XTmsHaMkVpNoFPUOV701Pe7zE1sp817gvhJtEiOkDroRuYv.
+        /// </summary>
+        internal static string Server {
+            get {
+                return ResourceManager.GetString("Server", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to nuCfz7rmUwVY0OtHFH4lYA==.
+        /// </summary>
+        internal static string UID {
+            get {
+                return ResourceManager.GetString("UID", resourceCulture);
+            }
+        }
     }
 }
